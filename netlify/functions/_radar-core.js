@@ -77,7 +77,7 @@ function normalizar(d) {
     handle: txt(pick(a.handle, a.username, '')),
     eng: Number(pick(m.engagement && (m.engagement.total ?? m.engagement), (d.social_metrics || {}).engagement, 0)) || 0,
     url,
-    sent: String(pick(en.sentiment, d.sentiment, '')).toLowerCase(),
+    sent: (() => { const s = pick(en.sentiment, d.sentiment, ''); return String((s && typeof s === 'object') ? (s.label || s.value || s.sentiment || s.polarity || '') : s).toLowerCase(); })(),
     alcance: Number(pick(m.reach, m.audience, src.reach, 0)) || 0,
     ave: Number(pick(m.ave, m.advertising_value_equivalency, 0)) || 0,
     // Por API, X/Twitter solo trae el ID del posteo, sin texto: no sirve para la tabla.
