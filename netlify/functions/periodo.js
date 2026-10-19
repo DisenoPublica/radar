@@ -78,7 +78,7 @@ export default async (req) => {
   if (hasta > hoy) hasta = hoy;
   if (!process.env.MELTWATER_API_KEY) return new Response(JSON.stringify({ ok: false, error: 'Falta MELTWATER_API_KEY' }), { status: 200, headers });
 
-  const key = 'periodo:' + desde + ':' + hasta;
+  const key = 'p2:' + desde + ':' + hasta;
   const guardado = await leer(key);
   const vigente = guardado && (hasta < hoy || Date.now() - new Date(guardado.consultado).getTime() < 3 * 3600e3);
   if (vigente) return new Response(JSON.stringify(guardado), { status: 200, headers });

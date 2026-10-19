@@ -20,8 +20,9 @@ En **Site configuration → Environment variables**:
 | `MELTWATER_API_KEY` | el mismo token que usa Pulso Empresarial |
 | `MELTWATER_SEARCH_ID` | `29072735` |
 
-Si antes habías cargado `MELTWATER_DESDE` con `2026-01-01`, cambiala a `2026-09-11`
-o borrala (el HTML ya trae todo lo anterior).
+**Base reiniciada (19 oct 2026):** el tablero ya no trae notas embebidas. Borrá `MELTWATER_DESDE` si la tenías cargada. En el primer refresco el servicio borra lo guardado y vuelve a descargar desde el 1 ene 2026, solo con la búsqueda actual (Eduardo Elsztain).
+
+Para ponerse al día más rápido, cargá `RADAR_TOPE` = `10` durante unos días (10 llamadas diarias en vez de 3) y después borrala.
 
 ## 3. Redeploy
 

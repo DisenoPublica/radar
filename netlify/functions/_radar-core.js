@@ -11,9 +11,10 @@ export const SEARCH_ID = process.env.MELTWATER_SEARCH_ID || '29072735';
 const TZ = 'America/Argentina/Buenos_Aires';
 const TOPE = Math.max(1, Math.min(10, Number(process.env.RADAR_TOPE || 3)));
 const PAGE = 100;
-// El HTML ya trae embebidas todas las notas hasta esta fecha.
-// Los agregados de Meltwater embebidos llegan hasta el 28 sep inclusive.
-const EMBEBIDO_HASTA = '2026-09-29';
+// Base reiniciada: el HTML no trae notas embebidas. Se descarga todo desde el 1 ene 2026.
+const EMBEBIDO_HASTA = '2026-01-01';
+// Cambiar esta marca borra lo guardado y vuelve a descargar desde cero.
+const VERSION_BASE = 'elsztain-2026-10-19';
 
 // ---------------------------------------------------------------------------
 // Persistencia: Netlify Blobs si está disponible; si no, memoria del proceso.
@@ -90,10 +91,12 @@ function normalizar(d) {
 
 export async function refrescar(origen) {
   const t0 = Date.now();
-  const acumulado = (await leer('docs')) || {};
-  const cursor = (await leer('cursor')) || {};
+  const reinicio = (await leer('version')) !== VERSION_BASE;
+  const acumulado = reinicio ? {} : ((await leer('docs')) || {});
+  const cursor = reinicio ? {} : ((await leer('cursor')) || {});
+  if (reinicio) await escribir('version', VERSION_BASE);
   const env = process.env.MELTWATER_DESDE || EMBEBIDO_HASTA;
-  const desde = cursor.desde || (env > EMBEBIDO_HASTA ? env : EMBEBIDO_HASTA);
+  const desde = cursor.desde || env;
   const end = dia(1) + 'T00:00:00';
 
   let llamadas = 0, nuevos = 0, ultima = null, alDia = false, error = null, muestra = null;
@@ -147,7 +150,7 @@ export async function refrescar(origen) {
     ok: !error || nuevos > 0,
     parcial: !!error || !alDia,
     cuando: new Date().toISOString(),
-    origen, llamadas, nuevos, purgadas,
+    origen, llamadas, nuevos, purgadas, reinicio, base: VERSION_BASE,
     total: Object.keys(acumulado).length,
     proximoDesde: proximo,
     searchId: SEARCH_ID,
