@@ -128,6 +128,14 @@ export async function refrescar(origen) {
   if (alDia) proximo = dia(-1);
   else if (ultima) proximo = ultima > desde ? ultima : sumarDias(desde, 1);
 
+  // La búsqueda ya no trae menciones solo de IRSA: se purgan las que quedaron guardadas
+  // de la versión anterior (sin Elsztain ni sus variantes en título o texto). Las redes no se tocan.
+  const EE = /elsztain|elstein|elsztein|elstain|eduardo einstein/i;
+  let purgadas = 0;
+  for (const k of Object.keys(acumulado)) {
+    const d = acumulado[k];
+    if (!d.social && !EE.test((d.titulo || '') + ' ' + (d.texto || ''))) { delete acumulado[k]; purgadas++; }
+  }
   const corte = dia(-400);
   for (const k of Object.keys(acumulado)) if (acumulado[k].fecha < corte) delete acumulado[k];
 
@@ -139,7 +147,7 @@ export async function refrescar(origen) {
     ok: !error || nuevos > 0,
     parcial: !!error || !alDia,
     cuando: new Date().toISOString(),
-    origen, llamadas, nuevos,
+    origen, llamadas, nuevos, purgadas,
     total: Object.keys(acumulado).length,
     proximoDesde: proximo,
     searchId: SEARCH_ID,
