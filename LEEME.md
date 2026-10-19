@@ -20,9 +20,7 @@ En **Site configuration → Environment variables**:
 | `MELTWATER_API_KEY` | el mismo token que usa Pulso Empresarial |
 | `MELTWATER_SEARCH_ID` | `29072735` |
 
-**Base reiniciada (19 oct 2026):** el tablero ya no trae notas embebidas. Borrá `MELTWATER_DESDE` si la tenías cargada. En el primer refresco el servicio borra lo guardado y vuelve a descargar desde el 1 ene 2026, solo con la búsqueda actual (Eduardo Elsztain).
-
-Para ponerse al día más rápido, cargá `RADAR_TOPE` = `10` durante unos días (10 llamadas diarias en vez de 3) y después borrala.
+**Histórico:** el tablero trae embebidas las notas del 1 ene al 28 sep 2026 que mencionan a Eduardo Elsztain (sin notas solo de IRSA). El servicio descarga desde el 29 sep. Borrá `MELTWATER_DESDE` si la tenías cargada.
 
 ## 3. Redeploy
 

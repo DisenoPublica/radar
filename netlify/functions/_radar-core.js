@@ -11,10 +11,11 @@ export const SEARCH_ID = process.env.MELTWATER_SEARCH_ID || '29072735';
 const TZ = 'America/Argentina/Buenos_Aires';
 const TOPE = Math.max(1, Math.min(10, Number(process.env.RADAR_TOPE || 3)));
 const PAGE = 100;
-// Base reiniciada: el HTML no trae notas embebidas. Se descarga todo desde el 1 ene 2026.
-const EMBEBIDO_HASTA = '2026-01-01';
+// El HTML trae el histórico (solo menciones de Eduardo) hasta el 28 sep; se descarga desde el 29 sep.
+const EMBEBIDO_HASTA = '2026-09-29';
 // Cambiar esta marca borra lo guardado y vuelve a descargar desde cero.
-const VERSION_BASE = 'elsztain-2026-10-19';
+const VERSION_BASE = 'elsztain-2026-10-20';
+const INICIO_BASE = '2026-09-29';
 
 // ---------------------------------------------------------------------------
 // Persistencia: Netlify Blobs si está disponible; si no, memoria del proceso.
@@ -91,10 +92,11 @@ function normalizar(d) {
 
 export async function refrescar(origen) {
   const t0 = Date.now();
+  // Reinicio: arranca siempre el 29 sep 2026 (ignora MELTWATER_DESDE). La marca de versión
+  // se guarda recién cuando entra la primera nota, así un 429 no deja el reinicio a medias.
   const reinicio = (await leer('version')) !== VERSION_BASE;
   const acumulado = reinicio ? {} : ((await leer('docs')) || {});
-  const cursor = reinicio ? {} : ((await leer('cursor')) || {});
-  if (reinicio) await escribir('version', VERSION_BASE);
+  const cursor = reinicio ? { desde: INICIO_BASE } : ((await leer('cursor')) || {});
   const env = process.env.MELTWATER_DESDE || EMBEBIDO_HASTA;
   const desde = cursor.desde || env;
   const end = dia(1) + 'T00:00:00';
@@ -144,6 +146,7 @@ export async function refrescar(origen) {
 
   await escribir('docs', acumulado);
   await escribir('cursor', { desde: proximo });
+  if (reinicio && nuevos > 0) await escribir('version', VERSION_BASE);
   if (muestra) await escribir('muestra', muestra);
 
   const estado = {
