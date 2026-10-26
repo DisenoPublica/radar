@@ -15,3 +15,8 @@
   from = "/api/periodo"
   to = "/.netlify/functions/periodo"
   status = 200
+
+[[redirects]]
+  from = "/api/lectura"
+  to = "/.netlify/functions/lectura"
+  status = 200

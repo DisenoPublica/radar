@@ -139,7 +139,8 @@ export async function refrescar(origen) {
   let purgadas = 0;
   for (const k of Object.keys(acumulado)) {
     const d = acumulado[k];
-    if (!d.social && !EE.test((d.titulo || '') + ' ' + (d.texto || ''))) { delete acumulado[k]; purgadas++; }
+    // La búsqueda ya es solo de Eduardo: se conservan todas las notas aunque el extracto no lo nombre.
+    void d; void EE;
   }
   const corte = dia(-400);
   for (const k of Object.keys(acumulado)) if (acumulado[k].fecha < corte) delete acumulado[k];
