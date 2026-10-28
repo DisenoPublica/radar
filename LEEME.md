@@ -4,7 +4,7 @@ Subí **esta carpeta entera** a la raíz del repo (rama `main`). Netlify publica
 
 ## Fuentes
 - **Prensa:** Excel de EJES. Se suben en la página **/cargar** del sitio (`https://irsa-radaree.netlify.app/cargar`),
-  protegida con una clave. Las notas se suman al instante. Una nota repetida en dos Excel cuenta una vez (por ID de EJES);
+  protegida con una clave. Acepta .xlsx, .xls y .csv. Las notas se suman al instante. Una nota repetida en dos Excel cuenta una vez (por ID de EJES);
   subir un archivo con el mismo nombre reemplaza al anterior; "Quitar" saca sus notas del tablero.
 - **Redes:** Meltwater, búsqueda 29072735 (Twitter/X, Facebook, Instagram, TikTok), consultada por período.
 

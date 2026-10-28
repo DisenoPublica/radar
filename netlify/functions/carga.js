@@ -1,6 +1,7 @@
 // Carga de Excel de EJES desde la página /cargar.
 //   GET    /api/carga                         lista de archivos cargados
 //   POST   /api/carga?nombre=archivo.xlsx     cuerpo: el archivo (binario). Encabezado x-clave.
+//          &formato=json                      para .xls: cuerpo = filas ya leídas en el navegador.
 //   DELETE /api/carga?id=U…                   borra un archivo y sus notas. Encabezado x-clave.
 // La clave se define en Netlify con la variable CARGA_CLAVE.
 import { leer } from './_radar-core.js';
@@ -20,10 +21,10 @@ export default async (req) => {
   try {
     if (req.method === 'POST') {
       const nombre = (q.get('nombre') || 'ejes.xlsx').slice(0, 160);
-      if (!/\.(xlsx|csv)$/i.test(nombre)) return r({ ok: false, error: 'Solo se aceptan archivos .xlsx o .csv.' }, 400);
+      if (!/\.(xlsx|xls|csv)$/i.test(nombre)) return r({ ok: false, error: 'Solo se aceptan archivos .xlsx, .xls o .csv.' }, 400);
       const buf = Buffer.from(await req.arrayBuffer());
       if (!buf.length) return r({ ok: false, error: 'El archivo está vacío.' }, 400);
-      return r(Object.assign({ ok: true }, await cargarArchivo(nombre, buf)));
+      return r(Object.assign({ ok: true }, await cargarArchivo(nombre, buf, q.get('formato'))));
     }
     if (req.method === 'DELETE') return r(Object.assign({ ok: true }, await borrarArchivo(q.get('id') || '')));
     return r({ ok: false, error: 'Método no permitido' }, 405);

@@ -112,9 +112,12 @@ export async function estadoEjes(origen, extra) {
 }
 
 // ---------- Carga directa (página /cargar) ----------
-export async function cargarArchivo(nombre, buf) {
+export async function cargarArchivo(nombre, buf, formato) {
   const id = 'U' + crypto.createHash('sha1').update(String(nombre).trim().toLowerCase()).digest('hex').slice(0, 15);
-  const filas = /\.csv$/i.test(nombre) ? filasCsv(buf.toString('utf8').replace(/^\uFEFF/, '')) : filasXlsx(buf);
+  // .xls (formato viejo de Excel): la página /cargar lo convierte a filas en el navegador y lo manda como JSON.
+  const filas = formato === 'json' ? JSON.parse(buf.toString('utf8'))
+    : /\.csv$/i.test(nombre) ? filasCsv(buf.toString('utf8').replace(/^\uFEFF/, '')) : filasXlsx(buf);
+  if (!Array.isArray(filas)) throw new Error('el archivo no se pudo leer');
   const ns = notasEjes(filas, id);
   if (!ns.length) throw new Error('el archivo no tiene notas con fecha y título');
   const archivos = (await leer('ejes-archivos')) || {};
