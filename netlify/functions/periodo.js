@@ -1,5 +1,5 @@
-// Números exactos de Meltwater para un período: volumen, sentiment y serie diaria
-// por fuente (prensa y cada red), más los posteos con más interacciones.
+// Redes desde Meltwater para un período: volumen, sentiment y serie diaria por red, más los
+// posteos con más interacciones. La prensa ya no sale de Meltwater: viene de los Excel de EJES.
 //
 //   GET /api/periodo?desde=2026-09-01&hasta=2026-09-30
 //
@@ -10,8 +10,9 @@ import { leer, escribir, SEARCH_ID } from './_radar-core.js';
 const API = 'https://api.meltwater.com/v3';
 const TZ = 'America/Argentina/Buenos_Aires';
 // Fuentes de prensa y redes que se consultan por separado al endpoint de analytics.
-const PRENSA = ['news', 'broadcast'];
-const REDES = { twitter: ['twitter', 'x'], facebook: ['facebook'], instagram: ['instagram'], youtube: ['youtube'], linkedin: ['linkedin'], tiktok: ['tiktok'] };
+const PRENSA = [];
+// YouTube y LinkedIn no están disponibles en analytics para esta cuenta (responden 400): no se piden.
+const REDES = { twitter: ['twitter', 'x'], facebook: ['facebook'], instagram: ['instagram'], tiktok: ['tiktok'] };
 
 const hoyAR = () => new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).format(new Date());
 const masUnDia = (d) => { const x = new Date(d + 'T12:00:00Z'); x.setUTCDate(x.getUTCDate() + 1); return x.toISOString().slice(0, 10); };
@@ -65,7 +66,7 @@ async function topPosteos(desde, hasta) {
     return { red, handle: a.handle || a.username || '', nombre: a.name || a.handle || src.name || '', eng,
       alcance: Number(m.reach || src.reach || 0), texto: String(c.opening_text || c.body || c.title || d.title || '').slice(0, 280),
       url, fecha: String(d.published_date || d.date || '').slice(0, 10) };
-  }).filter((p) => p.red && p.handle);
+  }).filter((p) => p.red && p.red !== 'youtube' && p.red !== 'linkedin' && p.handle);
 }
 
 export default async (req) => {
@@ -78,7 +79,7 @@ export default async (req) => {
   if (hasta > hoy) hasta = hoy;
   if (!process.env.MELTWATER_API_KEY) return new Response(JSON.stringify({ ok: false, error: 'Falta MELTWATER_API_KEY' }), { status: 200, headers });
 
-  const key = 'p2:' + desde + ':' + hasta;
+  const key = 'p3:' + desde + ':' + hasta;
   const guardado = await leer(key);
   const vigente = guardado && (hasta < hoy || Date.now() - new Date(guardado.consultado).getTime() < 3 * 3600e3);
   if (vigente) return new Response(JSON.stringify(guardado), { status: 200, headers });
@@ -97,7 +98,7 @@ export default async (req) => {
   let top = [];
   try { top = await topPosteos(desde, hasta); } catch (e) { errores.push(e.message); }
 
-  if (!prensa && !Object.keys(redes).length) {
+  if (!Object.keys(redes).length) {
     if (guardado) return new Response(JSON.stringify({ ...guardado, aviso: 'Meltwater no respondió; se muestra la última consulta guardada.', errores }), { status: 200, headers });
     return new Response(JSON.stringify({ ok: false, error: errores[0] || 'Meltwater no respondió', errores }), { status: 200, headers });
   }

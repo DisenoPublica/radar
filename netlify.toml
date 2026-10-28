@@ -5,11 +5,6 @@
 [functions]
   node_bundler = "esbuild"
 
-# El tablero pide /api/datos; Netlify lo resuelve a la función de lectura.
-[[redirects]]
-  from = "/api/datos"
-  to = "/.netlify/functions/datos"
-  status = 200
 
 [[redirects]]
   from = "/api/periodo"
@@ -19,4 +14,14 @@
 [[redirects]]
   from = "/api/lectura"
   to = "/.netlify/functions/lectura"
+  status = 200
+
+[[redirects]]
+  from = "/api/ejes"
+  to = "/.netlify/functions/ejes"
+  status = 200
+
+[[redirects]]
+  from = "/api/carga"
+  to = "/.netlify/functions/carga"
   status = 200

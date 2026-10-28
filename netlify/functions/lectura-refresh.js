@@ -1,5 +1,5 @@
 // Lectura de notas completas, programada cada 10 minutos. No usa llamadas de Meltwater.
-// Cada corrida lee unas 100 notas; las 2.000 de la base se completan en unas 4 horas.
+// Lee las notas online de los Excel de EJES (las de TV, radio y gráfica no tienen texto en la web).
 import { refrescarLectura } from './_lectura-core.js';
 
 export default async () => {

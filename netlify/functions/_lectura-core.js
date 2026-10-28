@@ -61,11 +61,11 @@ const PRESUPUESTO_MS = 15000, PARALELO = 8, REINTENTOS = 3, ESPERA_MS = 6 * 3600
 export async function refrescarLectura() {
   const t0 = Date.now();
   const mapa = (await leer('lectura')) || {};
-  const docs = (await leer('docs')) || {};
+  const docs = (await leer('ejes-docs')) || {};
   const lista = [], visto = new Set();
   const add = (url, fecha) => { const k = normUrl(url); if (!k || visto.has(k)) return; visto.add(k); lista.push({ url, k, fecha: fecha || '' }); };
-  Object.values(docs).forEach((d) => { if (!d.social && d.url) add(d.url, d.fecha); });
-  BASE.forEach(([u, f]) => add(u, f));
+  Object.values(docs).forEach((d) => { if (d.url && d.tp === 'Digital' && !/surl\.ejes\.com/.test(d.url)) add(d.url, d.fecha); });
+  if (!Object.keys(docs).length) BASE.forEach(([u, f]) => add(u, f));
   const pend = lista.filter((x) => {
     const L = mapa[x.k];
     if (!L) return true;
