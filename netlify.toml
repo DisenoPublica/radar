@@ -1,0 +1,27 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+
+[[redirects]]
+  from = "/api/periodo"
+  to = "/.netlify/functions/periodo"
+  status = 200
+
+[[redirects]]
+  from = "/api/lectura"
+  to = "/.netlify/functions/lectura"
+  status = 200
+
+[[redirects]]
+  from = "/api/ejes"
+  to = "/.netlify/functions/ejes"
+  status = 200
+
+[[redirects]]
+  from = "/api/carga"
+  to = "/.netlify/functions/carga"
+  status = 200
